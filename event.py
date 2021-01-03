@@ -27,11 +27,12 @@ class SignalEvent(Event):
     '''
 
 
-    def __init__(self, symbols, indicator, date_time):
+    def __init__(self, symbol, direction, date_time):
         super().__init__(type_ = 'SIGNAL')
-        self.symbol = symbols
+        self.symbols = symbols
+        self.direction = direction
         self.date_time = date_time
-        self.indicator = indicator
+        
         
 
 class OrderEvent(Event):
@@ -63,10 +64,12 @@ class OrderEvent(Event):
         self.direction = direction 
         self.date_time = date_time
 
-    def print_order():
+    def print_order(self):
         '''
         Helper method to print orders.
         '''
+        order = self.direction + self.symbol + self.direction + ' at ' + self.date_time
+        print(order)
 
 class FillEvent(Event):
     '''

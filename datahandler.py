@@ -29,7 +29,7 @@ class DataHandler():
         raise NotImplementedError("Need to implement get_latest_bars")
     def update_bars(self):
         '''
-
+        
         '''
         raise NotImplementedError("Need to implement update_bars")
 
@@ -48,6 +48,7 @@ class YahooHandler(DataHandler):
         self.cols = ['Timestamp','Open','High','Low','Close','Volume']
         self.recent_data = {}
         self.gen_dict = {}
+        self.cols_to_ind = {}
 
     def load_yahoo_data(self, start='1800-01-01', end=dt.date.today(),interval='1d'):
         '''
@@ -66,7 +67,7 @@ class YahooHandler(DataHandler):
         symbols = self.symbols
         func = (yf.Tickers if len(symbols) > 1 else yf.Ticker)
         joined_sym = ' '.join(self.symbols)
-        cols_to_ind = dict(zip(cols,range(len(cols))))
+        self.cols_to_ind = dict(zip(cols,range(len(cols))))
         data_multi_df = func(joined_sym).history(start=start, end=end, interval = interval)[cols[1:]]
         if len(symbols) > 1:
             for sym in symbols:
@@ -93,7 +94,7 @@ class YahooHandler(DataHandler):
 
     def get_bars(self,symbol):
         '''
-        Creates generator objects out of bars. This is useful for advancing
+        Creates generator objects out of numpy arrrays of bars. 
         '''
         for bar in self.symbol_data[symbol]:
             yield bar
@@ -109,7 +110,7 @@ class YahooHandler(DataHandler):
         '''
         Pushes new bars onto the recent_symbol_data structure, and "advances time"
         forward in the sense of the internal backtesting clock, by adding a MarketEvent 
-        object onto the event queue (to be written)
+        object onto the event queue as each bar is pushed forward.
         '''
         for sym in self.symbols:
             try:
@@ -124,4 +125,5 @@ class YahooHandler(DataHandler):
                     arr = np.ndarray(shape = (1,len(self.cols)),dtype = 'object')
                     arr[0] = bar
                     self.recent_data[sym] = arr
+        self.events.enqueue(event.MarketEvent())
         
