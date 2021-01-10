@@ -10,8 +10,7 @@ class EventQueue():
     
     def enqueue(self,x):
         self.data.append(x)
-    def dequeue(self,x)
+    def dequeue(self,x):
         self.data.pop(0)
-
-    def is_empty(self)
+    def is_empty(self):
         return not self.data

@@ -22,11 +22,12 @@ class BuyAndHold(Strategy):
         self.symbols = self.data.symbols
 
     def calculate_signals(self,event):
-        if event.type_ = 'MARKET':
+        if event.type_ == 'MARKET':
             for sym in self.symbols:
                 bars = self.get_latest_bars(sym)
                 if len(bars) > 0:
                     # Add in logic to check if it's bought.
                     ind = self.cols_to_ind['Timestamp']
-                    signal = SignalEvent(symbol,'LONG',bars[-1][ind])
+                    signal = SignalEvent(sym,'LONG',bars[-1][ind])
                     signal = self.events.enqueue(signal)
+    

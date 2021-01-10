@@ -4,7 +4,7 @@ class Event():
     trading environment.
 
     '''
-    def __init__(type_=None):
+    def __init__(self,type_=None):
         self.type_ = type_
 
 class MarketEvent(Event):
@@ -29,7 +29,7 @@ class SignalEvent(Event):
 
     def __init__(self, symbol, direction, date_time):
         super().__init__(type_ = 'SIGNAL')
-        self.symbols = symbols
+        self.symbol = symbol
         self.direction = direction
         self.date_time = date_time
         
@@ -53,10 +53,8 @@ class OrderEvent(Event):
             Time at which order is placed/becomes active. 
     
     '''
-    VALID_ORDER_TYPES = ['MKT','LIM']
 
     def __init__(self, symbol, order_type, quantity, direction, date_time):
-        assert order_type in VALID_ORDER_TYPES
         super().__init__(type_ = 'ORDER')
         self.symbol = symbol
         self.order_type = order_type
@@ -87,15 +85,22 @@ class FillEvent(Event):
             Comission that is paid for each transaction. 
            
     '''
-    def __init__(self, order, date_time, fill_price, comission = None):
+    def __init__(self, order, date_time, fill_price, comission_structure = None):
         super().__init__(type_='FILL')
         self.order = order
         self.fill_price = fill_price
-        self.commission = comission
         self.date_time = date_time
+        self.commissions = (self.compute_commisions(comission_structure) if comission_structure else 0)
 
-    def comission(self):
-        pass
+    def compute_comissions(self, comission_structure='IB_FIXED'):
+            # Interactive Brokers fixed comissions structure.
+            # Minimum comissions paid is the maximum of 1 dollar, or .005 for each 
+            # share traded. Maximum comissions is  the minimum of 1 percent of 
+            # cash spent on the order, or the previously calculated qty.
+        comissions = max(1,.005*self.order.quantity)
+        comissions = min(comissions,.01*self.order.quantity*self.fill_price)
+        return comissions
 
+    
 
 

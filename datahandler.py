@@ -50,6 +50,8 @@ class YahooHandler(DataHandler):
         self.gen_dict = {}
         self.cols_to_ind = {}
 
+        self.load_yahoo_data()
+
     def load_yahoo_data(self, start='1800-01-01', end=dt.date.today(),interval='1d'):
         '''
         Loads yahoo finance financial data using methods provided in the 
@@ -88,11 +90,11 @@ class YahooHandler(DataHandler):
         Helper method to create generators for bars
         """
         for sym in self.symbols:
-            self.gen_dict[sym] = self.get_bars(sym)
+            self.gen_dict[sym] = self.create_bars(sym)
 
         #TODO - Forward fill missing data if there is any 
 
-    def get_bars(self,symbol):
+    def create_bars(self,symbol):
         '''
         Creates generator objects out of numpy arrrays of bars. 
         '''
@@ -104,7 +106,7 @@ class YahooHandler(DataHandler):
         '''
         Gets the latest bars received/known at a given time for a given symbol.
         '''
-        return self.recent_data[sym][-num_bars:]
+        return self.recent_data[symbol][-num_bars:]
 
     def update_bars(self):
         '''
